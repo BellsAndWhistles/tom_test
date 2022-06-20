@@ -49,12 +49,39 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'django_gravatar',
+    'django_dramatiq',
     'tom_targets',
     'tom_alerts',
     'tom_catalogs',
     'tom_observations',
     'tom_dataproducts',
+    'myapp.apps.MyappConfig'
 ]
+
+DRAMATIQ_BROKER = {
+    "BROKER": "dramatiq.brokers.redis.RedisBroker",
+    "OPTIONS": {
+        "url": "redis://localhost:6379",
+    },
+    "MIDDLEWARE": [
+        "dramatiq.middleware.AgeLimit",
+        "dramatiq.middleware.TimeLimit",
+        "dramatiq.middleware.Callbacks",
+        "dramatiq.middleware.Retries",
+        "django_dramatiq.middleware.AdminMiddleware",
+        "django_dramatiq.middleware.DbConnectionsMiddleware",
+    ]
+}
+
+DRAMATIQ_RESULT_BACKEND = {
+    "BACKEND": "dramatiq.results.backends.redis.RedisBackend",
+    "BACKEND_OPTIONS": {
+        "url": "redis://localhost:6379",
+    },
+    "MIDDLEWARE_OPTIONS": {
+        "result_ttl": 60000
+    }
+}
 
 SITE_ID = 1
 
@@ -243,6 +270,7 @@ TOM_ALERT_CLASSES = [
     'tom_alerts.brokers.lasair.LasairBroker',
     'tom_alerts.brokers.mars.MARSBroker',
     'mytom.my_broker.MyBroker',
+    'tom_scimma.scimma.SCIMMABroker',
     'tom_antares.antares.ANTARESBroker',
     'tom_alerts.brokers.scimma.SCIMMABroker',
     'tom_alerts.brokers.scout.ScoutBroker',
@@ -252,7 +280,15 @@ TOM_ALERT_CLASSES = [
 BROKERS = {
     'TNS': {
         'api_key': ''
-    }
+    },
+    'SCIMMA': {
+            'url': 'http://skip.dev.hop.scimma.org',
+            'api_key': os.getenv('SKIP_API_KEY', ''),
+            'hopskotch_url': 'dev.hop.scimma.org',
+            'hopskotch_username': os.getenv('brendanrmills-0e4a3032', ''),
+            'hopskotch_password': os.getenv('FGX8yIFl4MTgMqQJ15k8v3NXNB261Jjg', ''),
+            'default_hopskotch_topic': ''
+        }
 }
 
 HARVESTERS = {

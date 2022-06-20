@@ -7,3 +7,9 @@ class AboutView(TemplateView):
 
     def get_context_data(self, **kwargs):
         return {'targets': Target.objects.all()}
+
+class StreamsView(TemplateView):
+    template_name = 'streams.html'
+
+    def get_context_data(self, **kwargs):
+        return {'targets': Target.objects.all()}
